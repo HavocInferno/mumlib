@@ -33,7 +33,11 @@ find_package(Protobuf REQUIRED HINTS ${PROTOBUF_ROOT}/cmake) # manually give Pro
 
 pkg_check_modules(LOG4CPP "log4cpp")
 pkg_check_modules(OPUS "opus")
-
+####################################################################################
+# Opus manually
+set(OPUS_INCLUDE_DIRS "C:/projects/Tryouts/opus/opus-1.3.1-minimal/include")
+#set(OPUS_LIBRARIES "") which libs does opus even need?...
+####################################################################################
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${OPENSSL_INCLUDE_DIR})
