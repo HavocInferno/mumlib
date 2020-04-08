@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(mumlib)
 
+####################################################################################
+# CONAN
+####################################################################################
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+####################################################################################
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if (NOT APPLE)
@@ -9,11 +16,20 @@ else()
   LINK_DIRECTORIES(/opt/local/lib) # Include the default MacPorts library directory
 endif()
 
+####################################################################################
+# Protobuf manually
+set(PROTOBUF_ROOT "C:/projects/Tryouts/protobuf/install")
+include(${PROTOBUF_ROOT}/cmake/protobuf-config.cmake)
+include(${PROTOBUF_ROOT}/cmake/protobuf-module.cmake)
+include(${PROTOBUF_ROOT}/cmake/protobuf-options.cmake)
+include(${PROTOBUF_ROOT}/cmake/protobuf-targets.cmake)
+####################################################################################
+
 INCLUDE(FindPkgConfig)
 find_package(PkgConfig REQUIRED)
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(Protobuf REQUIRED)
+find_package(Protobuf REQUIRED HINTS ${PROTOBUF_ROOT}/cmake) # manually give Protobuf hint
 
 pkg_check_modules(LOG4CPP "log4cpp")
 pkg_check_modules(OPUS "opus")
@@ -55,6 +71,9 @@ set(SPEEX_LIBRARIES
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS Mumble.proto)
 
 add_library(mumlib SHARED ${MUMLIB_SRC} ${MUMLIB_PUBLIC_HEADERS} ${MUMLIB_PRIVATE_HEADERS} ${PROTO_SRCS} ${PROTO_HDRS})
+##### Conan
+target_link_libraries(mumlib ${CONAN_LIBS})
+#####
 target_link_libraries(mumlib 
         ${SPEEX_LIBRARIES}
         ${PROTOBUF_LIBRARIES}
@@ -68,4 +87,4 @@ set_target_properties(mumlib PROPERTIES PUBLIC_HEADER "${MUMLIB_PUBLIC_HEADERS}"
 add_executable(mumlib_example mumlib_example.cpp)
 target_link_libraries(mumlib_example mumlib)
 
-install(TARGETS mumlib LIBRARY DESTINATION lib PUBLIC_HEADER DESTINATION include/mumlib)
+install(TARGETS mumlib DESTINATION lib PUBLIC_HEADER DESTINATION include/mumlib) #just DESTINATION instead of LIBRARY DESTINATION for Win Cmake
