@@ -2,6 +2,9 @@
 
 #include <boost/format.hpp>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 static boost::posix_time::seconds RESET_SEQUENCE_NUMBER_INTERVAL(5);
 
 namespace {
