@@ -26,7 +26,7 @@ static map<MumbleProto::Reject_RejectType, string> rejectMessages = {
 };
 
 mumlib::Transport::Transport(
-        io_service &ioService,
+        boost::asio::io_service &ioService,
         mumlib::ProcessControlMessageFunction processMessageFunc,
         ProcessEncodedAudioPacketFunction processEncodedAudioPacketFunction,
         bool noUdp,
@@ -39,7 +39,7 @@ mumlib::Transport::Transport(
         noUdp(noUdp),
         state(ConnectionState::NOT_CONNECTED),
         udpSocket(ioService),
-        sslContext(ssl::context::sslv23),
+        sslContext(boost::asio::ssl::context::sslv23),
         sslContextHelper(sslContext, cert_file, privkey_file),
         sslSocket(ioService, sslContext),
         pingTimer(ioService, PING_INTERVAL),
@@ -523,7 +523,7 @@ void mumlib::Transport::throwTransportException(string message) {
     throw TransportException(std::move(message));
 }
 
-mumlib::SslContextHelper::SslContextHelper(ssl::context &ctx, std::string cert_file, std::string privkey_file) {
+mumlib::SslContextHelper::SslContextHelper(boost::asio::ssl::context &ctx, std::string cert_file, std::string privkey_file) {
     if ( cert_file.size() > 0 ) {
         ctx.use_certificate_file(cert_file, ssl::context::file_format::pem);
     }
