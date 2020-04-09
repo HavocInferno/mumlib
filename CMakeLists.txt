@@ -1,11 +1,16 @@
-cmake_minimum_required(VERSION 2.8.0)
+cmake_minimum_required(VERSION 3.7)
 project(mumlib)
 
 ####################################################################################
-# CONAN
+# CONAN & UCM
 ####################################################################################
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+
+if ( NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
+include( ucm )
+add_definitions( /bigobj )
+endif()
 ####################################################################################
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -43,9 +48,12 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${OPUS_INCLUDE_DIRS})
+set(SPEEXDSP_INCLUDE_DIRS "C:/projects/Tryouts/speex/speex-1.2.0-minimal/speexDSP/include")
+include_directories(${SPEEXDSP_INCLUDE_DIRS})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${LOG4CPP_INCLUDE_DIRS})
+
 include_directories(include)
 
 set(MUMLIB_PUBLIC_HEADERS include/mumlib.hpp include/mumlib/VarInt.hpp)
@@ -68,13 +76,14 @@ set(MUMLIB_SRC
         )
 
 set(SPEEX_LIBRARIES
-        speex
-        speexdsp
+        C:/projects/Tryouts/speex/speex-1.2.0-minimal/speex/lib/x64/Debug/speex.lib
+        C:/projects/Tryouts/speex/speex-1.2.0-minimal/speexDSP/lib/x64/Debug/speexdsp.lib
         )
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS Mumble.proto)
 
-add_library(mumlib SHARED ${MUMLIB_SRC} ${MUMLIB_PUBLIC_HEADERS} ${MUMLIB_PRIVATE_HEADERS} ${PROTO_SRCS} ${PROTO_HDRS})
+add_library(mumlib STATIC ${MUMLIB_SRC} ${MUMLIB_PUBLIC_HEADERS} ${MUMLIB_PRIVATE_HEADERS} ${PROTO_SRCS} ${PROTO_HDRS})
+
 ##### Conan
 target_link_libraries(mumlib ${CONAN_LIBS})
 #####
@@ -89,6 +98,12 @@ target_link_libraries(mumlib
 set_target_properties(mumlib PROPERTIES PUBLIC_HEADER "${MUMLIB_PUBLIC_HEADERS}")
 
 add_executable(mumlib_example mumlib_example.cpp)
-target_link_libraries(mumlib_example mumlib)
+target_link_libraries(mumlib_example mumlib ${CONAN_LIBS})
 
 install(TARGETS mumlib DESTINATION lib PUBLIC_HEADER DESTINATION include/mumlib) #just DESTINATION instead of LIBRARY DESTINATION for Win Cmake
+
+############################################
+if ( ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC )
+ucm_set_runtime( STATIC )
+endif()
+############################################ 
