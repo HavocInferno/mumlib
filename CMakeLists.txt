@@ -22,8 +22,8 @@ else()
 endif()
 
 ####################################################################################
-# Protobuf manually
-set(PROTOBUF_ROOT "C:/projects/Tryouts/protobuf/install")
+# Protobuf manual cmake modules ref
+set(PROTOBUF_ROOT "ThirdParty/protobuf-3.11.4-minimal")
 include(${PROTOBUF_ROOT}/cmake/protobuf-config.cmake)
 include(${PROTOBUF_ROOT}/cmake/protobuf-module.cmake)
 include(${PROTOBUF_ROOT}/cmake/protobuf-options.cmake)
@@ -39,16 +39,16 @@ find_package(Protobuf REQUIRED HINTS ${PROTOBUF_ROOT}/cmake) # manually give Pro
 pkg_check_modules(LOG4CPP "log4cpp")
 pkg_check_modules(OPUS "opus")
 ####################################################################################
-# Opus manually
-set(OPUS_INCLUDE_DIRS "C:/projects/Tryouts/opus/opus-1.3.1-minimal/include")
-#set(OPUS_LIBRARIES "") which libs does opus even need?...
+# Manual includes TODO: conan-ify
+set(OPUS_INCLUDE_DIRS "ThirdParty/opus-1.3.1-minimal/include")
+set(SPEEXDSP_INCLUDE_DIRS "ThirdParty/speex-1.2.0-minimal/speexDSP/include")
 ####################################################################################
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories(${OPENSSL_INCLUDE_DIR})
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${OPUS_INCLUDE_DIRS})
-set(SPEEXDSP_INCLUDE_DIRS "C:/projects/Tryouts/speex/speex-1.2.0-minimal/speexDSP/include")
+
 include_directories(${SPEEXDSP_INCLUDE_DIRS})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -76,8 +76,12 @@ set(MUMLIB_SRC
         )
 
 set(SPEEX_LIBRARIES
-        C:/projects/Tryouts/speex/speex-1.2.0-minimal/speex/lib/x64/Debug/speex.lib
-        C:/projects/Tryouts/speex/speex-1.2.0-minimal/speexDSP/lib/x64/Debug/speexdsp.lib
+        ../ThirdParty/speex-1.2.0-minimal/speex/lib/x64/Debug/speex
+        ../ThirdParty/speex-1.2.0-minimal/speexDSP/lib/x64/Debug/speexdsp
+        )
+		
+set(OPUS_LIBRARIES
+        ../ThirdParty/opus-1.3.1-minimal/lib/Debug/opus
         )
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS Mumble.proto)
