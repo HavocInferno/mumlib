@@ -54,7 +54,7 @@ namespace mumlib {
                           ioService,
                           boost::bind(&_Mumlib_Private::processIncomingTcpMessage, this, _1, _2, _3),
                           boost::bind(&_Mumlib_Private::processAudioPacket, this, _1, _2, _3),
-                          false,
+                          true,
                           configuration.cert_file,
                           configuration.privkey_file),
                   audio(configuration.opusSampleRate, configuration.opusEncoderBitrate, configuration.opusChannels) {
